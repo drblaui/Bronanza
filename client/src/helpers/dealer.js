@@ -1,5 +1,7 @@
 import Deck from './deck';
 
+//Dealer that works with our global Deck
+//TODO: Test if every user get's his own Deck or if it is actually global (Need more client testers)
 export default class Dealer {
     constructor(scene) {
         //Init decks
@@ -7,7 +9,7 @@ export default class Dealer {
         playDeck.createFullSet();
         let throwDeck = new Deck(scene);
         this.dealCards = () => {
-            //One game Start
+            //On game Start
             let playCards = playDeck.draw(5);
 
             for (let i = 0; i < 5; i++) {

@@ -3,10 +3,13 @@ const http = require('http').createServer(server);
 const io = require('socket.io')(http);
 let players = [];
 
+// User Connection handlers
 io.on('connection', function(socket) {
     console.log("A user connected: " + socket.id);
+    // So we know who plays right now
     players.push(socket.id);
 
+    // Not really needed later, but just here for testing
     if (players.length === 1) {
         io.emit('isPlayerA');
     };
@@ -19,6 +22,7 @@ io.on('connection', function(socket) {
         io.emit('cardPlayed', gameObject, isPlayerA);
     });
 
+    //Remove socket from current players
     socket.on('disconnect', function() {
         console.log('A user disconnected: ' + socket.id);
         players = players.filter(player => player !== socket.id);

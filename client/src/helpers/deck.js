@@ -1,10 +1,14 @@
 import Card from "./card";
 
+//Map our Decks (both the draw deck and the throwaway deck)
+//Should we track the Cards a user harvested?
 export default class Deck {
     constructor(scene) {
         this.deckCards = [];
         this.createFullSet = () => {
             //Create Deck with all beans
+            //TODO: IF ELSE IF ELSE IF ELSE, what are you Yandere Dev?
+            //HACK
             for (let i = 20; i > 0; i--) {
                 let blueBean = new Card(scene, 'blue', [4, 6, 8, 10]);
                 this.deckCards.push(blueBean);
@@ -34,12 +38,14 @@ export default class Deck {
 
                 }
                 if (i <= 6) {
+                    //FIXME: 2 Beans actually give two coins, but we would only get one here
                     let gardenBean = new Card(scene, 'garden', [2, 3]);
                     this.deckCards.push(gardenBean);
                 }
             }
             this.shuffle();
             return this.deckCards;
+            //BUG: Sometimes beans are weird
         }
         this.shuffle = () => {
             let deck = this.deckCards;

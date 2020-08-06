@@ -27,21 +27,25 @@ export default class Game extends Phaser.Scene {
     }
 
     create() {
+        //XXX: Isn't cleaned, beware of misguiding
+        let self = this;
+
+        //Will be removed after testing
         this.isPlayerA = false;
         this.opponentCards = [];
 
         this.dealText = this.add.text(75, 350, ['DEAL CARDS']).setFontSize(18).setFontFamily('Trebuchet MS').setColor('#00ffff').setInteractive();
         this.drawText = this.add.text(0, 0, ['DRAW ONE CARD']).setFontSize(18).setFontFamily('Trebuchet MS').setColor('#00ffff').setInteractive();
-        let self = this;
 
         this.playerZone = new Zone(this);
         this.playerDropZone = this.playerZone.renderZone(365, 590, 'playing_field_two');
         this.outline = this.playerZone.renderOutline(this.playerDropZone);
 
-        this.socket = io('http://localhost:3000');
-
         this.dealer = new Dealer(this);
 
+        this.socket = io('http://localhost:3000');
+
+        //Useless cosmetics
         this.dealText.on('pointerover', function() {
             self.dealText.setColor('#ff69b4');
         });
@@ -51,13 +55,16 @@ export default class Game extends Phaser.Scene {
         });
 
         this.dealText.on('pointerdown', function() {
+            //Tell the server it should deal
             self.socket.emit('dealCards');
         });
 
         this.drawText.on('pointerdown', function() {
+            //DEBUG
             self.dealer.draw();
         })
 
+        //Funny drag event handling
         this.input.on('drag', function(pointer, gameObject, dragX, dragY) {
             gameObject.x = dragX;
             gameObject.y = dragY;
@@ -78,9 +85,14 @@ export default class Game extends Phaser.Scene {
 
         this.input.on('drop', function(pointer, gameObject, dropZone) {
             dropZone.data.values.cards++;
+            //TODO: if statement, if the same type is already there
+            //FIXME: gameObject.type is bullshit
+            console.log(gameObject);
+            dropZone.data.values.beanType = gameObject.type;
             gameObject.x = (dropZone.x - 350) + (dropZone.data.values.cards * 50);
             gameObject.y = dropZone.y;
             gameObject.disableInteractive();
+            // Tell the server we played a card, so the other clients know
             self.socket.emit('cardPlayed', gameObject, self.isPlayerA);
         });
 
