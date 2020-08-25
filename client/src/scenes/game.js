@@ -12,8 +12,9 @@ export default class Game extends Phaser.Scene {
 
     preload() {
         //Load assets
-        this.load.image('playing_field_three', 'src/assets/player_place_down_three.png');
-        this.load.image('playing_field_two', 'src/assets/player_place_down_two.png');
+        this.load.image('playing_field_one', 'src/assets/player_place_down_field_one.png');
+        this.load.image('playing_field_two', 'src/assets/player_place_down_field_two.png');
+        this.load.image('playing_field_three', 'src/assets/player_place_down_field_three.png');
         this.load.image('player_start_indicator', 'src/assets/player_start.png');
         this.load.image('bean_blue', 'src/assets/blue_bean.png');
         this.load.image('bean_fire', 'src/assets/fire_bean.png');
@@ -33,13 +34,32 @@ export default class Game extends Phaser.Scene {
         //Will be removed after testing
         this.isPlayerA = false;
         this.opponentCards = [];
+        //TEST
+        this.playerCount = 3;
 
         this.dealText = this.add.text(75, 350, ['DEAL CARDS']).setFontSize(18).setFontFamily('Trebuchet MS').setColor('#00ffff').setInteractive();
         this.drawText = this.add.text(0, 0, ['DRAW ONE CARD']).setFontSize(18).setFontFamily('Trebuchet MS').setColor('#00ffff').setInteractive();
-
+        /*
         this.playerZone = new Zone(this);
         this.playerDropZone = this.playerZone.renderZone(365, 590, 'playing_field_two');
         this.outline = this.playerZone.renderOutline(this.playerDropZone);
+        //We don't need it to be interactive
+        this.playerDropZone.disableInteractive();*/
+
+        //Create Player Zone for three fields
+        this.fieldOne = new Zone(this);
+        //TODO: Hardcoding is bad
+        //TODO: Drop relative to zone
+        this.fieldOneDrop = this.fieldOne.renderZone(190, 580, 'playing_field_one');
+        this.outline = this.fieldOne.renderOutline(this.fieldOneDrop);
+
+        this.fieldTwo = new Zone(this);
+        this.fieldTwoDrop = this.fieldTwo.renderZone(554, 580, 'playing_field_two');
+        this.outline = this.fieldTwo.renderOutline(this.fieldTwoDrop);
+
+        this.fieldThree = new Zone(this);
+        this.fieldThreeDrop = this.fieldThree.renderZone(920, 580, 'playing_field_three');
+        this.outline = this.fieldThree.renderOutline(this.fieldThreeDrop);
 
         this.dealer = new Dealer(this);
 

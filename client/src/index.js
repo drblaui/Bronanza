@@ -6,7 +6,7 @@ const config = {
     parent: "phaser-example",
     width: 1280,
     height: 780,
-    // HAVE game.js handle everything
+    // Have game.js handle everything
     scene: [
         Game
     ]

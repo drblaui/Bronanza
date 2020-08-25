@@ -39,7 +39,8 @@ export default class Deck {
                 }
                 if (i <= 6) {
                     //FIXME: 2 Beans actually give two coins, but we would only get one here
-                    let gardenBean = new Card(scene, 'garden', [2, 3]);
+                    //FIXED: Nulls just get skipped in card evaluation
+                    let gardenBean = new Card(scene, 'garden', [null, 2, 3]);
                     this.deckCards.push(gardenBean);
                 }
             }

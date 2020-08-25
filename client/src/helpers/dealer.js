@@ -8,7 +8,7 @@ export default class Dealer {
         let playDeck = new Deck(scene);
         playDeck.createFullSet();
         let throwDeck = new Deck(scene);
-        this.dealCards = () => {
+        this.dealCards = (players) => {
             //On game Start
             let playCards = playDeck.draw(5);
 
