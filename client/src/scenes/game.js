@@ -15,7 +15,7 @@ export default class Game extends Phaser.Scene {
         this.load.image('playing_field_one', 'src/assets/player_place_down_field_one.png');
         this.load.image('playing_field_two', 'src/assets/player_place_down_field_two.png');
         this.load.image('playing_field_three', 'src/assets/player_place_down_field_three.png');
-        this.load.image('player_start_indicator', 'src/assets/player_start.png');
+        this.load.image('player_start_indicator', 'src/assets/player_start.jpg');
         this.load.image('bean_blue', 'src/assets/blue_bean.png');
         this.load.image('bean_fire', 'src/assets/fire_bean.png');
         this.load.image('bean_dirt', 'src/assets/dirt_bean.png');
@@ -37,7 +37,7 @@ export default class Game extends Phaser.Scene {
         //TEST
         this.playerCount = 3;
 
-        this.dealText = this.add.text(75, 350, ['DEAL CARDS']).setFontSize(18).setFontFamily('Trebuchet MS').setColor('#00ffff').setInteractive();
+        //this.dealText = this.add.text(75, 350, ['DEAL CARDS']).setFontSize(18).setFontFamily('Trebuchet MS').setColor('#00ffff').setInteractive();
         this.drawText = this.add.text(0, 0, ['DRAW ONE CARD']).setFontSize(18).setFontFamily('Trebuchet MS').setColor('#00ffff').setInteractive();
         /*
         this.playerZone = new Zone(this);
@@ -50,39 +50,46 @@ export default class Game extends Phaser.Scene {
         this.fieldOne = new Zone(this);
         //TODO: Hardcoding is bad
         //TODO: Drop relative to zone
-        this.fieldOneDrop = this.fieldOne.renderZone(190, 580, 'playing_field_one');
-        this.outline = this.fieldOne.renderOutline(this.fieldOneDrop);
+        this.fieldOneDrop = this.fieldOne.renderZone(190, 580, 'playing_field_one', 'pfOne');
+		this.outline = this.fieldOne.renderOutline(this.fieldOneDrop);
+		this.harvestPfOneText = this.add.text(0, this.fieldOneDrop.height, ['Harvest Field']).setFontSize(15).setFontFamily('Trebuchet MS').setColor('#00ffff').setInteractive();
+		this.harvestPfOneText.x = (this.fieldOneDrop.x - (this.harvestPfOneText.width / 2));
 
         this.fieldTwo = new Zone(this);
-        this.fieldTwoDrop = this.fieldTwo.renderZone(554, 580, 'playing_field_two');
-        this.outline = this.fieldTwo.renderOutline(this.fieldTwoDrop);
+        this.fieldTwoDrop = this.fieldTwo.renderZone(554, 580, 'playing_field_two', 'pfTwo');
+		this.outline = this.fieldTwo.renderOutline(this.fieldTwoDrop);
+		this.harvestPfTwoText = this.add.text(0, this.fieldTwoDrop.height, ['Harvest Field']).setFontSize(15).setFontFamily('Trebuchet MS').setColor('#00ffff').setInteractive();
+		this.harvestPfTwoText.x = (this.fieldTwoDrop.x - (this.harvestPfTwoText.width / 2));
 
         this.fieldThree = new Zone(this);
-        this.fieldThreeDrop = this.fieldThree.renderZone(920, 580, 'playing_field_three');
-        this.outline = this.fieldThree.renderOutline(this.fieldThreeDrop);
+        this.fieldThreeDrop = this.fieldThree.renderZone(920, 580, 'playing_field_three', 'pfThree');
+		this.outline = this.fieldThree.renderOutline(this.fieldThreeDrop);
+		this.harvestPfThreeText = this.add.text(0, this.fieldThreeDrop.height, ['Harvest Field']).setFontSize(15).setFontFamily('Trebuchet MS').setColor('#00ffff').setInteractive();
+		this.harvestPfThreeText.x = (this.fieldThreeDrop.x - (this.harvestPfThreeText.width / 2));
 
         this.dealer = new Dealer(this);
 
-        this.socket = io('http://localhost:3000');
-
-        //Useless cosmetics
-        this.dealText.on('pointerover', function() {
-            self.dealText.setColor('#ff69b4');
-        });
-
-        this.dealText.on('pointerout', function() {
-            self.dealText.setColor('#00ffff');
-        });
-
-        this.dealText.on('pointerdown', function() {
-            //Tell the server it should deal
-            self.socket.emit('dealCards');
-        });
+		this.socket = io('http://localhost:3000');
+		
+		this.harvestPfOneText.on('pointerdown', function() {
+			let values = self.fieldOneDrop.data.values;
+			if (values.beanType != null) {
+				values.beanType = null;
+				values.cards = 0;
+				//TODO: Split cards for harvest and dead drop deck
+				//For now we just delete the cards
+				for(let i = 0; i < values.contains.length; i++) {
+					let card = values.contains[i];
+					card.destroy();
+				}
+				values.contains = []
+			}
+		});
 
         this.drawText.on('pointerdown', function() {
             //DEBUG
             self.dealer.draw();
-        })
+        });
 
         //Funny drag event handling
         this.input.on('drag', function(pointer, gameObject, dragX, dragY) {
@@ -104,16 +111,21 @@ export default class Game extends Phaser.Scene {
         });
 
         this.input.on('drop', function(pointer, gameObject, dropZone) {
-            dropZone.data.values.cards++;
-            //TODO: if statement, if the same type is already there
-            //FIXME: gameObject.type is bullshit
-            console.log(gameObject);
-            dropZone.data.values.beanType = gameObject.type;
-            gameObject.x = (dropZone.x - 350) + (dropZone.data.values.cards * 50);
-            gameObject.y = dropZone.y;
-            gameObject.disableInteractive();
-            // Tell the server we played a card, so the other clients know
-            self.socket.emit('cardPlayed', gameObject, self.isPlayerA);
+            if(gameObject.customData.type === dropZone.data.values.beanType || dropZone.data.values.beanType == null) {
+                dropZone.data.values.cards++;
+				dropZone.data.values.beanType = gameObject.customData.type;
+				dropZone.data.values.contains.push(gameObject);
+                gameObject.x = dropZone.x;
+            	gameObject.y = dropZone.y + (dropZone.data.values.cards * 50);
+            	gameObject.disableInteractive();
+            	// Tell the server we played a card, so the other clients know
+				self.socket.emit('cardPlayed', gameObject, self.isPlayerA);
+			}
+			else {
+				gameObject.setTint();
+				gameObject.x = gameObject.input.dragStartX;
+				gameObject.y = gameObject.input.dragStartY;
+			}
         });
 
         this.socket.on('connect', function() {
