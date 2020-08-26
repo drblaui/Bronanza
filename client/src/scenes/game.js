@@ -94,7 +94,56 @@ export default class Game extends Phaser.Scene {
                 for (let i = 0; i < remainder; i++) {
                     self.dealer.throwAway(new Card(self, type, coins));
                 }
-                console.log(self.dealer.throwDeck);
+                values.contains = []
+            }
+        });
+
+        this.harvestPfTwoText.on('pointerdown', function() {
+            let values = self.fieldTwoDrop.data.values;
+            let coins = values.contains[0].customData.values;
+            let type = values.beanType;
+
+            if (values.beanType != null) {
+                values.beanType = null;
+                values.cards = 0;
+
+                let harvested = harvest(values.contains.length, coins);
+                let reward = harvested[0];
+                let remainder = harvested[1];
+                self.playerCoins += reward;
+                self.coinsText.text = 'Coins: ' + self.playerCoins;
+                for (let i = 0; i < values.contains.length; i++) {
+                    let card = values.contains[i];
+                    card.destroy();
+                }
+                for (let i = 0; i < remainder; i++) {
+                    self.dealer.throwAway(new Card(self, type, coins));
+                }
+                values.contains = []
+            }
+        });
+
+        this.harvestPfThreeText.on('pointerdown', function() {
+            let values = self.fieldThreeDrop.data.values;
+            let coins = values.contains[0].customData.values;
+            let type = values.beanType;
+
+            if (values.beanType != null) {
+                values.beanType = null;
+                values.cards = 0;
+
+                let harvested = harvest(values.contains.length, coins);
+                let reward = harvested[0];
+                let remainder = harvested[1];
+                self.playerCoins += reward;
+                self.coinsText.text = 'Coins: ' + self.playerCoins;
+                for (let i = 0; i < values.contains.length; i++) {
+                    let card = values.contains[i];
+                    card.destroy();
+                }
+                for (let i = 0; i < remainder; i++) {
+                    self.dealer.throwAway(new Card(self, type, coins));
+                }
                 values.contains = []
             }
         });
@@ -126,7 +175,7 @@ export default class Game extends Phaser.Scene {
                     amount--;
                 }
             }
-            console.log(remainCards);
+
             return [coins, remainCards];
         }
 
