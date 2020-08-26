@@ -5,7 +5,7 @@ export default class Zone {
         this.renderZone = (x, y, sprite, name) => {
             let background = scene.add.image(x, y, sprite);
             let dropZone = scene.add.zone(x, y, background.displayWidth, background.displayHeight).setRectangleDropZone(background.displayWidth, background.displayHeight);
-            dropZone.setData({ cards: 0, beanType: null, name: name, contains: []});
+            dropZone.setData({ cards: 0, beanType: null, name: name, contains: [] });
             return dropZone;
         };
         this.renderOutline = (dropZone) => {

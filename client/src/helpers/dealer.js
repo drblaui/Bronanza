@@ -5,12 +5,12 @@ import Deck from './deck';
 export default class Dealer {
     constructor(scene) {
         //Init decks
-        let playDeck = new Deck(scene);
-        playDeck.createFullSet();
-        let throwDeck = new Deck(scene);
+        this.playDeck = new Deck(scene);
+        this.playDeck.createFullSet();
+        this.throwDeck = new Deck(scene);
         this.dealCards = (players) => {
             //On game Start
-            let playCards = playDeck.draw(5);
+            let playCards = this.playDeck.draw(5);
 
             for (let i = 0; i < 5; i++) {
                 let card = playCards[i];
@@ -19,8 +19,11 @@ export default class Dealer {
         }
         this.draw = () => {
             //Debug reasons
-            let card = playDeck.draw(1)[0];
+            let card = this.playDeck.draw(1)[0];
             card.render(800, 650, 'bean_' + card.type);
+        }
+        this.throwAway = (card) => {
+            this.throwDeck.putCardOn(card);
         }
     }
 
