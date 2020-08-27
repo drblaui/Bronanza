@@ -2,7 +2,7 @@
 A bad Card game for you and your friends
 
 # Own usage
-Remember to use `npm init` and `npm install` to initialize and install Node JS modules
+Remember to use `npm install` to install Node JS modules
 
 First run `npm start` in the `client` folder and then in its parent folder
 
