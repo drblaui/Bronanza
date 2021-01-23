@@ -1,3 +1,5 @@
+# This has been completely abandoned, because I found out how hard JavaScript is
+
 # Bronanza
 A bad Card game for you and your friends
 
